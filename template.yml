@@ -34,7 +34,7 @@ Resources:
       Environment:
         Variables:
           # Make table name accessible as environment variable from function code during execution
-          SAMPLE_TABLE: !Ref SampleTable
+          DYNAMODB_TABLE: !Ref SampleTable
       Events:
         Api:
           Type: Api
@@ -60,7 +60,7 @@ Resources:
       Environment:
         Variables:
           # Make table name accessible as environment variable from function code during execution
-          SAMPLE_TABLE: !Ref SampleTable
+          DYNAMODB_TABLE: !Ref SampleTable
       Events:
         Api:
           Type: Api
@@ -86,7 +86,7 @@ Resources:
       Environment:
         Variables:
           # Make table name accessible as environment variable from function code during execution
-          SAMPLE_TABLE: !Ref SampleTable
+          DYNAMODB_TABLE: !Ref SampleTable
       Events:
         Api:
           Type: Api

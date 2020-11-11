@@ -2,3 +2,6 @@
 *.iml
 
 node_modules
+
+.aws-sam
+build

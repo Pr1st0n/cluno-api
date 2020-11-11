@@ -4,7 +4,7 @@ import { APIGatewayEvent } from 'aws-lambda';
 import dynamodb from 'aws-sdk/clients/dynamodb';
 
 // Get the DynamoDB table name from environment variables
-const tableName = process.env.SAMPLE_TABLE || '';
+const tableName = process.env.DYNAMODB_TABLE || '';
 // Create a DocumentClient that represents the query to add an item
 const docClient = new dynamodb.DocumentClient();
 
