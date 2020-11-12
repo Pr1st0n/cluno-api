@@ -1,15 +1,18 @@
-// Create clients and set shared const values outside of the handler.
-
 import { APIGatewayEvent } from 'aws-lambda';
 import dynamodb from 'aws-sdk/clients/dynamodb';
+import AWS from 'aws-sdk';
+
+AWS.config.update({
+    region: 'eu-central-1'
+});
 
 // Get the DynamoDB table name from environment variables
-const tableName = process.env.DYNAMODB_TABLE || '';
+const tableName = process.env.DYNAMODB_TABLE || 'cluno-api-orders';
 // Create a DocumentClient that represents the query to add an item
 const docClient = new dynamodb.DocumentClient();
 
 /**
- * A simple example includes a HTTP get method to get one item by id from a DynamoDB table.
+ * A simple example includes a HTTP get method to get one order by id from a DynamoDB table.
  */
 export const getByIdHandler = async (event: APIGatewayEvent): Promise<any> => {
     if (event.httpMethod !== 'GET') {
