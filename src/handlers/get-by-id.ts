@@ -36,11 +36,11 @@ export const getByIdHandler = async (event: APIGatewayEvent): Promise<any> => {
         },
         ProjectionExpression:
             'available,car,conditions,estimatedDeliveryTime,id,images,labels,portfolio,pricing,#segment,visible',
-        ExpressionAttributeValues: {
-            ':visible': true
-        },
         ExpressionAttributeNames: {
             '#segment': 'segment'
+        },
+        ExpressionAttributeValues: {
+            ':visible': true
         },
         FilterExpression: 'visible = :visible'
     };

@@ -24,18 +24,28 @@ export const getAllItemsHandler = async (event: APIGatewayEvent): Promise<any> =
     }
     // All log statements are written to CloudWatch
     console.info('received:', event);
+    const limit = parseInt(event.queryStringParameters?.limit || '', 10) || 10;
     // get all items from the table (only first 1MB data, you can use `LastEvaluatedKey` to get the rest of data)
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#scan-property
     // https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Scan.html
-    const params = {
+    const params: any = {
         TableName: tableName,
-        ProjectionExpression: 'id, teaser, detailUrl, labels, pricing.price',
+        ProjectionExpression: 'id,teaser,detailUrl,labels,pricing.price',
         ExpressionAttributeValues: {
             ':visible': true
         },
         FilterExpression: 'visible = :visible',
-        Limit: 10
+        MaxResults: limit
     };
+    if (event.queryStringParameters?.make && event.queryStringParameters.make.length) {
+        let makes = event.queryStringParameters.make.split(',');
+        makes = makes.map((val, idx) => {
+            const name = ':make' + idx;
+            params.ExpressionAttributeValues[name] = val;
+            return name;
+        });
+        params.FilterExpression += ` AND car.make IN (${makes.join(',')})`;
+    }
     try {
         const data = await docClient.scan(params).promise();
         return formatResponse(serialize(data.Items));
