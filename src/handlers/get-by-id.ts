@@ -1,6 +1,7 @@
 import { APIGatewayEvent } from 'aws-lambda';
 import dynamodb from 'aws-sdk/clients/dynamodb';
 import AWS from 'aws-sdk';
+import { formatResponse, serialize } from '../util/common';
 
 AWS.config.update({
     region: 'eu-central-1'
@@ -16,7 +17,10 @@ const docClient = new dynamodb.DocumentClient();
  */
 export const getByIdHandler = async (event: APIGatewayEvent): Promise<any> => {
     if (event.httpMethod !== 'GET') {
-        throw new Error(`getMethod only accept GET method, you tried: ${event.httpMethod}`);
+        return formatResponse(
+            serialize({ error: `getMethod only accept GET method, you tried: ${event.httpMethod}` }),
+            400
+        );
     }
     // All log statements are written to CloudWatch
     console.info('received:', event);
@@ -24,21 +28,28 @@ export const getByIdHandler = async (event: APIGatewayEvent): Promise<any> => {
     // Get id from pathParameters from APIGateway because of `/{id}` at template.yml
     const id = event.pathParameters?.id;
 
-    // Get the item from the table
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#get-property
+    // Get Offer details
     const params = {
         TableName: tableName,
-        Key: { id: id },
+        Key: {
+            id: id
+        },
+        ProjectionExpression:
+            'available,car,conditions,estimatedDeliveryTime,id,images,labels,portfolio,pricing,#segment,visible',
+        ExpressionAttributeValues: {
+            ':visible': true
+        },
+        ExpressionAttributeNames: {
+            '#segment': 'segment'
+        },
+        FilterExpression: 'visible = :visible'
     };
-    const data = await docClient.get(params).promise();
-    const item = data.Item;
-
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify(item)
-    };
-
-    // All log statements are written to CloudWatch
-    console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);
-    return response;
+    try {
+        const data = await docClient.get(params).promise();
+        return formatResponse(serialize(data.Item));
+    } catch (err) {
+        // All log statements are written to CloudWatch
+        console.info(`response from: ${event.path} statusCode: ${err.statusCode} body: ${err.body}`);
+        return formatResponse(serialize(err), 500);
+    }
 };
