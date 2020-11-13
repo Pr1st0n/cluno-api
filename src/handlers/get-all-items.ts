@@ -41,13 +41,18 @@ const buildParams = (queryString: { [name: string]: string } | null ): dynamodb.
         TableName: tableName,
         ProjectionExpression: 'id,teaser,detailUrl,labels,pricing.price',
         ExpressionAttributeValues: {
-            ':visible': true
+            ':visible': true, // Return only visible offers
+            ':portfolio': '0001'
         },
-        FilterExpression: 'visible = :visible' // Return only visible offers
+        FilterExpression: 'visible = :visible AND portfolio = :portfolio'
     };
 
     if (!queryString) {
         return params;
+    }
+
+    if (queryString?.portfolio && queryString.portfolio.length) {
+        params.ExpressionAttributeValues![':portfolio'] = queryString.portfolio;
     }
 
     // Apply 'make' filter

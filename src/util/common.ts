@@ -9,6 +9,6 @@ export const formatResponse = (body: string, status= 200) => {
     };
 };
 
-export const serialize = (object: any) => {
+export const serialize = (object: unknown): string => {
     return JSON.stringify(object, null, 2);
 };

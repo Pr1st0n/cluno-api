@@ -24,7 +24,7 @@ Resources:
         Api:
           Type: Api
           Properties:
-            Path: /offers/
+            Path: /api/v1/offers/
             Method: GET
   # This is a Lambda function config associated with the source code: get-by-id.js
   getByIdFunction:
@@ -47,7 +47,7 @@ Resources:
         Api:
           Type: Api
           Properties:
-            Path: /offers/{id}
+            Path: /api/v1/offers/{id}
             Method: GET
   # DynamoDB table to store Offers
   OffersTable:
