@@ -1,8 +1,9 @@
 // Import dynamodb from aws-sdk
 import dynamodb from 'aws-sdk/clients/dynamodb';
 // Import all functions from get-by-id.ts
-import * as lambda from '../../../handlers/get-by-id';
+import * as lambda from '../../../src/handlers/get-by-id';
 import { APIGatewayEvent } from 'aws-lambda';
+import { serialize } from '../../../src/util/common';
 
 // This includes all tests for getByIdHandler()
 describe('Test getByIdHandler', () => {
@@ -22,7 +23,7 @@ describe('Test getByIdHandler', () => {
 
     // This test invokes getByIdHandler() and compare the result  
     it('should get item by id', async () => {
-        const item = { id: 'id1' };
+        const item = { id: '100' };
 
         // Return the specified value whenever the spied get function is called 
         getSpy.mockReturnValue({
@@ -32,7 +33,7 @@ describe('Test getByIdHandler', () => {
         const event: any = {
             httpMethod: 'GET',
             pathParameters: {
-                id: 'id1'
+                id: '100'
             }
         };
 
@@ -41,7 +42,11 @@ describe('Test getByIdHandler', () => {
 
         const expectedResult = {
             statusCode: 200,
-            body: JSON.stringify(item)
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            isBase64Encoded: false,
+            body: serialize(item)
         };
 
         // Compare the result with the expected result 

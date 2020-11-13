@@ -1,8 +1,9 @@
 // Import all functions from get-all-items.ts
-import * as lambda from '../../../handlers/get-all-items';
-// Import dynamodb from aws-sdk 
+import * as lambda from '../../../src/handlers/get-all-items';
+// Import dynamodb from aws-sdk
 import dynamodb from 'aws-sdk/clients/dynamodb';
 import { APIGatewayEvent } from 'aws-lambda';
+import { serialize } from '../../../src/util/common';
 
 // This includes all tests for getAllItemsHandler() 
 describe('Test getAllItemsHandler', () => {
@@ -21,11 +22,48 @@ describe('Test getAllItemsHandler', () => {
     });
 
     it('should return ids', async () => {
-        const items = [{ id: 'id1' }, { id: 'id2' }];
+        const items = [
+            {
+                detailUrl: '/car1',
+                id: '1',
+                pricing: {
+                    price: 99
+                },
+                teaser: {
+                    title: 'Car1',
+                    teaserImage: 'https://example.com/car.jpg'
+                },
+                labels: []
+            },
+            {
+                detailUrl: '/car2',
+                id: '2',
+                pricing: {
+                    price: 15
+                },
+                teaser: {
+                    title: 'Car2',
+                    teaserImage: 'https://example.com/car.jpg'
+                },
+                labels: []
+            },
+            {
+                detailUrl: '/car3',
+                id: '3',
+                pricing: {
+                    price: 10
+                },
+                teaser: {
+                    title: 'Car3',
+                    teaserImage: 'https://example.com/car.jpg'
+                },
+                labels: []
+            }
+        ];
 
         // Return the specified value whenever the spied scan function is called 
         scanSpy.mockReturnValue({
-            promise: () => Promise.resolve({ Items: items })
+            promise: () => Promise.resolve({ Items: [...items] })
         });
 
         const event = {
@@ -37,7 +75,11 @@ describe('Test getAllItemsHandler', () => {
 
         const expectedResult = {
             statusCode: 200,
-            body: JSON.stringify(items)
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            isBase64Encoded: false,
+            body: serialize({ items: items.reverse(), count: 3 })
         };
 
         // Compare the result with the expected result 

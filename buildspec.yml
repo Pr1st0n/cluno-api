@@ -9,7 +9,6 @@ phases:
       # Discover and run unit tests in the '__tests__' directory
       - npm run test
       - npm run build
-      - npm run import
       # Remove all unit tests to reduce the size of the package that will be ultimately uploaded to Lambda
       - rm -rf ./__tests__ ./src
       # Remove all dependencies not needed for the Lambda deployment package (the packages from devDependencies in package.json)

@@ -1,11 +1,11 @@
 export const formatResponse = (body: string, status= 200) => {
     return {
-        'statusCode': status,
-        'headers': {
+        statusCode: status,
+        headers: {
             'Content-Type': 'application/json'
         },
-        'isBase64Encoded': false,
-        'body': body
+        isBase64Encoded: false,
+        body: body
     };
 };
 

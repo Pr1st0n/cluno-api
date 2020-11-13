@@ -37,7 +37,7 @@ export const getAllItemsHandler = async (event: APIGatewayEvent): Promise<any> =
 };
 
 const buildParams = (queryString: { [name: string]: string } | null ): dynamodb.DocumentClient.ScanInput => {
-    const params: any = {
+    const params: dynamodb.DocumentClient.ScanInput = {
         TableName: tableName,
         ProjectionExpression: 'id,teaser,detailUrl,labels,pricing.price',
         ExpressionAttributeValues: {
@@ -55,7 +55,7 @@ const buildParams = (queryString: { [name: string]: string } | null ): dynamodb.
         let makes = queryString.make.split(',');
         makes = makes.map((val, idx) => {
             const name = ':make' + idx;
-            params.ExpressionAttributeValues[name] = val;
+            params.ExpressionAttributeValues![name] = val;
             return name;
         });
         params.FilterExpression += ` AND car.make IN (${makes.join(',')})`;
@@ -69,8 +69,8 @@ const buildParams = (queryString: { [name: string]: string } | null ): dynamodb.
         if (price.length !== 2 || !pmin || !pmax || pmin > pmax) {
             return params; // Ignore invalid filter
         }
-        params.ExpressionAttributeValues[':pmin'] = pmin;
-        params.ExpressionAttributeValues[':pmax'] = pmax;
+        params.ExpressionAttributeValues![':pmin'] = pmin;
+        params.ExpressionAttributeValues![':pmax'] = pmax;
         params.FilterExpression += ' AND pricing.price BETWEEN :pmin AND :pmax';
     }
 
