@@ -1,24 +1,9 @@
-# This is the SAM template that represents the architecture of your serverless application
-# https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-template-basics.html
-
-# The AWSTemplateFormatVersion identifies the capabilities of the template
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/format-version-structure.html
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
   cluno-api
-
-# Transform section specifies one or more macros that AWS CloudFormation uses to process your template
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
 Transform:
 - AWS::Serverless-2016-10-31
-
-# Resources declares the AWS resources that you want to include in the stack
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-
-  # This is a Lambda function config associated with the source code: get-all-items.js
   getAllItemsFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -28,22 +13,19 @@ Resources:
       Timeout: 100
       Description: A simple example includes a HTTP get method to get all items from a DynamoDB table.
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        # Give Create/Read/Update/Delete Permissions to the OffersTable
         - DynamoDBCrudPolicy:
-            TableName: !Ref SampleTable
+            TableName: !Ref OffersTable
       Environment:
         Variables:
           # Make table name accessible as environment variable from function code during execution
-          DYNAMODB_TABLE: !Ref SampleTable
+          DYNAMODB_TABLE: !Ref OffersTable
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /
+            Path: /offers/
             Method: GET
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-
   # This is a Lambda function config associated with the source code: get-by-id.js
   getByIdFunction:
     Type: AWS::Serverless::Function
@@ -54,33 +36,30 @@ Resources:
       Timeout: 100
       Description: A simple example includes a HTTP get method to get one item by id from a DynamoDB table.
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        # Give Create/Read/Update/Delete Permissions to the OffersTable
         - DynamoDBCrudPolicy:
-            TableName: !Ref SampleTable
+            TableName: !Ref OffersTable
       Environment:
         Variables:
           # Make table name accessible as environment variable from function code during execution
-          DYNAMODB_TABLE: !Ref SampleTable
+          DYNAMODB_TABLE: !Ref OffersTable
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /{id}
+            Path: /offers/{id}
             Method: GET
-  # Simple syntax to create a DynamoDB table with a single attribute primary key, more in
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable
-
-  # DynamoDB table to store item: {id: &lt;ID&gt;, name: &lt;NAME&gt;}
-  SampleTable:
+  # DynamoDB table to store Offers
+  OffersTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
+      TableName : cluno-api-offers
       PrimaryKey:
         Name: id
         Type: String
       ProvisionedThroughput:
         ReadCapacityUnits: 2
         WriteCapacityUnits: 2
-
 Outputs:
   WebEndpoint:
     Description: "API Gateway endpoint URL for Prod stage"

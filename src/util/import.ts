@@ -6,20 +6,24 @@ AWS.config.update({
     region: 'eu-central-1'
 });
 
+const url = process.env.DYNAMODB_EXPORT_JSON;
+if (!url || !url.length) {
+    console.log('Unable to import data. Export file URL is not defined');
+    process.exit();
+}
 const docClient = new AWS.DynamoDB.DocumentClient();
-const url = process.env.DYNAMODB_EXPORT_JSON || 'https://assets.cluno.com/offer/dynamodb.export.json';
 const importData = (rawData: string) => {
     const data = JSON.parse(rawData);
 
     data.Items.forEach((item: any) => {
         const params = {
-            TableName: process.env.DYNAMODB_TABLE || 'cluno-api-SampleTable-NBKEXGQW89QM',
+            TableName: process.env.DYNAMODB_TABLE || 'cluno-api-offers',
             Item: AWS.DynamoDB.Converter.unmarshall(item)
         };
 
         docClient.put(params, (err: AWSError) => {
             if (err) {
-                console.error('Unable to add Order', params.Item.id, '. Error JSON:', JSON.stringify(err, null, 2));
+                console.error('Unable to import Offer', params.Item.id, '. Error JSON:', JSON.stringify(err, null, 2));
             } else {
                 console.log('PutItem succeeded:', params.Item.id);
             }
@@ -27,7 +31,7 @@ const importData = (rawData: string) => {
     });
 };
 
-console.log('Importing orders into DynamoDB. Please wait.');
+console.log('Importing offers into DynamoDB. Please wait.');
 
 const req = https.get(url, (res) => {
     let rawData = '';
