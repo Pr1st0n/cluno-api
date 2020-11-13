@@ -63,3 +63,4 @@ aws cloudformation delete-stack --stack-name cluno-api
 - Implement pagination using *limit* and *offset* filters
 - Implement pipeline using *buildspec.yml*
 - Delegate scan result sort and maximum result items number to DB
+- Implement minimal authorization
